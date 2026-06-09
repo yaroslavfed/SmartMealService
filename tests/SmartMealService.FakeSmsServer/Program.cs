@@ -22,7 +22,7 @@ app.MapPost(
 
         return command switch
         {
-            "GetMenu" => Results.Json(
+            "GetMenu" when IsScenarioEnabled("FAKE_SMS_GET_MENU_SUCCESS", defaultValue: true) => Results.Json(
                 new
                 {
                     Command = "GetMenu",
@@ -63,7 +63,24 @@ app.MapPost(
                     }
                 }
             ),
-            "SendOrder" => Results.Json(new { Command = "SendOrder", Success = true, ErrorMessage = "" }),
+            "GetMenu" => Results.Json(
+                new
+                {
+                    Command = "GetMenu",
+                    Success = false,
+                    ErrorMessage = "Fake GetMenu error"
+                }
+            ),
+            "SendOrder" when IsScenarioEnabled("FAKE_SMS_SEND_ORDER_SUCCESS", defaultValue: true) =>
+                Results.Json(new { Command = "SendOrder", Success = true, ErrorMessage = "" }),
+            "SendOrder" => Results.Json(
+                new
+                {
+                    Command = "SendOrder",
+                    Success = false,
+                    ErrorMessage = "Fake SendOrder error"
+                }
+            ),
             _ => Results.Json(
                 new { Command = command ?? "", Success = false, ErrorMessage = $"Unknown command: {command}" }
             )
@@ -81,4 +98,10 @@ static bool HasExpectedBasicAuth(HttpRequest request)
 
     var expected = Convert.ToBase64String("testuser:testpass"u8.ToArray());
     return values.Count == 1 && values[0] == $"Basic {expected}";
+}
+
+static bool IsScenarioEnabled(string variableName, bool defaultValue)
+{
+    var value = Environment.GetEnvironmentVariable(variableName);
+    return bool.TryParse(value, out var parsed) ? parsed : defaultValue;
 }

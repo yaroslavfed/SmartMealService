@@ -95,6 +95,33 @@ public class SmsHttpClientTests : IDisposable
     }
 
     [Fact]
+    public async Task GetMenu_ShouldThrowHttpRequestException_WhenServerReturnsHttpError()
+    {
+        _server
+            .Given(Request.Create().WithPath("/").UsingPost())
+            .RespondWith(Response.Create().WithStatusCode(500));
+
+        var act = async () => await _client.GetMenuAsync();
+
+        await act.Should().ThrowAsync<HttpRequestException>();
+    }
+
+    [Fact]
+    public async Task GetMenu_ShouldThrowJsonException_WhenServerReturnsMalformedJson()
+    {
+        _server
+            .Given(Request.Create().WithPath("/").UsingPost())
+            .RespondWith(Response.Create()
+                .WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBody("{ malformed json"));
+
+        var act = async () => await _client.GetMenuAsync();
+
+        await act.Should().ThrowAsync<JsonException>();
+    }
+
+    [Fact]
     public async Task GetMenu_ShouldSendBasicAuth_WithCorrectCredentials()
     {
         _server
