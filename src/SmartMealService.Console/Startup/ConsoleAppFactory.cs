@@ -70,7 +70,7 @@ public static class ConsoleAppFactory
     {
         var value = configuration.GetConnectionString(name);
         if (string.IsNullOrWhiteSpace(value))
-            throw new InvalidOperationException($"Connection string '{name}' is not configured.");
+            throw new InvalidOperationException($"Строка подключения '{name}' не настроена.");
 
         return value;
     }
@@ -79,7 +79,7 @@ public static class ConsoleAppFactory
     {
         var value = configuration[key];
         if (string.IsNullOrWhiteSpace(value))
-            throw new InvalidOperationException($"Setting '{key}' is not configured.");
+            throw new InvalidOperationException($"Параметр '{key}' не настроен.");
 
         return value;
     }

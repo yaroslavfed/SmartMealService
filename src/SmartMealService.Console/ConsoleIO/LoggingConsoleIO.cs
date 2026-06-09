@@ -7,7 +7,7 @@ public class LoggingConsoleIO : IConsoleIO
     public string? ReadLine()
     {
         var input = global::System.Console.ReadLine();
-        Log.Information("Console input: {Input}", input);
+        Log.Information("Ввод пользователя: {Input}", input);
         return input;
     }
 

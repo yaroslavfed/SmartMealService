@@ -41,19 +41,19 @@ public class SmsHttpClientTests : IDisposable
                                 {
                                     "Id": "5979224",
                                     "Article": "A1004292",
-                                    "Name": "\u041a\u0430\u0448\u0430 \u0433\u0440\u0435\u0447\u043d\u0435\u0432\u0430\u044f",
+                                    "Name": "Каша гречневая",
                                     "Price": 50,
                                     "IsWeighted": false,
-                                    "FullPath": "\u041f\u0420\u041e\u0418\u0417\u0412\u041e\u0414\u0421\u0422\u0412\u041e\\\u0413\u0430\u0440\u043d\u0438\u0440\u044b",
+                                    "FullPath": "ПРОИЗВОДСТВО\\Гарниры",
                                     "Barcodes": ["57890975627974236429"]
                                 },
                                 {
                                     "Id": "9084246",
                                     "Article": "A1004293",
-                                    "Name": "\u041a\u043e\u043d\u0444\u0435\u0442\u044b \u041a\u043e\u0440\u043e\u0432\u043a\u0430",
+                                    "Name": "Конфеты Коровка",
                                     "Price": 300,
                                     "IsWeighted": true,
-                                    "FullPath": "\u0414\u0415\u0421\u0415\u0420\u0422\u042b\\\u0420\u0430\u0437\u0432\u0435\u0441",
+                                    "FullPath": "ДЕСЕРТЫ\\Развес",
                                     "Barcodes": []
                                 }
                             ]
@@ -65,7 +65,7 @@ public class SmsHttpClientTests : IDisposable
 
         result.Should().HaveCount(2);
         result[0].Id.Should().Be("5979224");
-        result[0].Name.Should().Be("\u041a\u0430\u0448\u0430 \u0433\u0440\u0435\u0447\u043d\u0435\u0432\u0430\u044f");
+        result[0].Name.Should().Be("Каша гречневая");
         result[0].Price.Should().Be(50m);
         result[1].Id.Should().Be("9084246");
         result[1].IsWeighted.Should().BeTrue();
@@ -84,14 +84,14 @@ public class SmsHttpClientTests : IDisposable
                     {
                         "Command": "GetMenu",
                         "Success": false,
-                        "ErrorMessage": "\u041c\u0435\u043d\u044e \u043d\u0435\u0434\u043e\u0441\u0442\u0443\u043f\u043d\u043e"
+                        "ErrorMessage": "Меню недоступно"
                     }
                     """));
 
         var act = async () => await _client.GetMenuAsync();
 
         await act.Should().ThrowAsync<SmsApiException>()
-            .WithMessage("\u041c\u0435\u043d\u044e \u043d\u0435\u0434\u043e\u0441\u0442\u0443\u043f\u043d\u043e");
+            .WithMessage("Меню недоступно");
     }
 
     [Fact]
@@ -213,7 +213,7 @@ public class SmsHttpClientTests : IDisposable
                     {
                         "Command": "SendOrder",
                         "Success": false,
-                        "ErrorMessage": "\u0417\u0430\u043a\u0430\u0437 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d"
+                        "ErrorMessage": "Заказ не найден"
                     }
                     """));
 
@@ -222,7 +222,7 @@ public class SmsHttpClientTests : IDisposable
         var act = async () => await _client.SendOrderAsync(order);
 
         await act.Should().ThrowAsync<SmsApiException>()
-            .WithMessage("\u0417\u0430\u043a\u0430\u0437 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d");
+            .WithMessage("Заказ не найден");
     }
 
     [Fact]

@@ -9,9 +9,9 @@ public class OrderInputParserTests
 {
     private readonly List<MenuItem> _availableItems =
     [
-        new MenuItem { Id = "5979224", Article = "A1004292", Name = "Buckwheat", Price = 50 },
-        new MenuItem { Id = "9084246", Article = "A1004293", Name = "Candy", Price = 300 },
-        new MenuItem { Id = "1111111", Article = "A1004294", Name = "Soup", Price = 120 }
+        new MenuItem { Id = "5979224", Article = "A1004292", Name = "Каша гречневая", Price = 50 },
+        new MenuItem { Id = "9084246", Article = "A1004293", Name = "Конфеты Коровка", Price = 300 },
+        new MenuItem { Id = "1111111", Article = "A1004294", Name = "Суп куриный", Price = 120 }
     ];
 
     [Fact]
@@ -50,7 +50,7 @@ public class OrderInputParserTests
         var act = () => OrderInputParser.Parse("9999999:1", _availableItems);
 
         act.Should().Throw<OrderInputException>()
-            .WithMessage("*9999999*");
+            .WithMessage("Блюдо с кодом 9999999 не найдено в меню.");
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class OrderInputParserTests
         var act = () => OrderInputParser.Parse("5979224:1;9999999:2", _availableItems);
 
         act.Should().Throw<OrderInputException>()
-            .WithMessage("*9999999*");
+            .WithMessage("Блюдо с кодом 9999999 не найдено в меню.");
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class OrderInputParserTests
         var act = () => OrderInputParser.Parse("5979224:0", _availableItems);
 
         act.Should().Throw<OrderInputException>()
-            .WithMessage("*5979224*");
+            .WithMessage("Количество для блюда 5979224 должно быть больше нуля.");
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class OrderInputParserTests
         var act = () => OrderInputParser.Parse("5979224:-1", _availableItems);
 
         act.Should().Throw<OrderInputException>()
-            .WithMessage("*5979224*");
+            .WithMessage("Количество для блюда 5979224 должно быть больше нуля.");
     }
 
     [Fact]
@@ -86,15 +86,16 @@ public class OrderInputParserTests
         var act = () => OrderInputParser.Parse("5979224:abc", _availableItems);
 
         act.Should().Throw<OrderInputException>()
-            .WithMessage("*5979224*");
+            .WithMessage("Количество для блюда 5979224 должно быть числом.");
     }
 
     [Fact]
     public void Parse_ShouldThrowException_WhenFormatIsInvalid()
     {
-        var act = () => OrderInputParser.Parse("invalid input", _availableItems);
+        var act = () => OrderInputParser.Parse("невалидный ввод", _availableItems);
 
-        act.Should().Throw<OrderInputException>();
+        act.Should().Throw<OrderInputException>()
+            .WithMessage("Некорректный формат позиции заказа: невалидный ввод");
     }
 
     [Fact]
@@ -102,7 +103,8 @@ public class OrderInputParserTests
     {
         var act = () => OrderInputParser.Parse("", _availableItems);
 
-        act.Should().Throw<OrderInputException>();
+        act.Should().Throw<OrderInputException>()
+            .WithMessage("Строка заказа не может быть пустой.");
     }
 
     [Fact]
@@ -110,6 +112,7 @@ public class OrderInputParserTests
     {
         var act = () => OrderInputParser.Parse("   ", _availableItems);
 
-        act.Should().Throw<OrderInputException>();
+        act.Should().Throw<OrderInputException>()
+            .WithMessage("Строка заказа не может быть пустой.");
     }
 }

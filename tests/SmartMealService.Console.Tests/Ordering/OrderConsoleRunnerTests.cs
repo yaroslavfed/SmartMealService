@@ -21,11 +21,11 @@ public class OrderConsoleRunnerTests
 
         menuRepository.Setup(r => r.InitializeAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
         smsClient.Setup(c => c.GetMenuAsync(It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new SmsApiException("Menu unavailable"));
+            .ThrowsAsync(new SmsApiException("Меню недоступно"));
 
         await runner.RunAsync();
 
-        console.Output.Should().Contain("Menu unavailable");
+        console.Output.Should().Contain("Меню недоступно");
         menuRepository.Verify(r => r.SaveMenuAsync(It.IsAny<IEnumerable<MenuItem>>(), It.IsAny<CancellationToken>()), Times.Never);
         smsClient.Verify(c => c.SendOrderAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -48,8 +48,8 @@ public class OrderConsoleRunnerTests
 
         await runner.RunAsync();
 
-        console.Output.Should().Contain(message => message.Contains("Invalid order item format"));
-        console.Output.Should().Contain("\u0423\u0421\u041f\u0415\u0425");
+        console.Output.Should().Contain(message => message.Contains("Некорректный формат позиции заказа"));
+        console.Output.Should().Contain("УСПЕХ");
         sentOrder.Should().NotBeNull();
         sentOrder!.Items.Should().HaveCount(2);
         sentOrder.Items[0].Should().BeEquivalentTo(new OrderItem { Id = "5979224", Quantity = 1 });
@@ -72,7 +72,7 @@ public class OrderConsoleRunnerTests
 
         await runner.RunAsync();
 
-        console.Output.Should().Contain("\u0423\u0421\u041f\u0415\u0425");
+        console.Output.Should().Contain("УСПЕХ");
     }
 
     [Fact]
@@ -87,11 +87,11 @@ public class OrderConsoleRunnerTests
         menuRepository.Setup(r => r.SaveMenuAsync(It.IsAny<IEnumerable<MenuItem>>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
         smsClient.Setup(c => c.GetMenuAsync(It.IsAny<CancellationToken>())).ReturnsAsync(Menu());
         smsClient.Setup(c => c.SendOrderAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new SmsApiException("Order rejected"));
+            .ThrowsAsync(new SmsApiException("Заказ не принят"));
 
         await runner.RunAsync();
 
-        console.Output.Should().Contain("Order rejected");
+        console.Output.Should().Contain("Заказ не принят");
     }
 
     [Fact]
@@ -103,18 +103,18 @@ public class OrderConsoleRunnerTests
         var runner = new OrderConsoleRunner(smsClient.Object, menuRepository.Object, console);
 
         menuRepository.Setup(r => r.InitializeAsync(It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new InvalidOperationException("database unavailable"));
+            .ThrowsAsync(new InvalidOperationException("База данных недоступна"));
 
         await runner.RunAsync();
 
-        console.Output.Should().Contain(message => message.Contains("database unavailable"));
+        console.Output.Should().Contain(message => message.Contains("База данных недоступна"));
         smsClient.Verify(c => c.GetMenuAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     private static List<MenuItem> Menu() =>
     [
-        new MenuItem { Id = "5979224", Article = "A1004292", Name = "Buckwheat", Price = 50 },
-        new MenuItem { Id = "9084246", Article = "A1004293", Name = "Candy", Price = 300 }
+        new MenuItem { Id = "5979224", Article = "A1004292", Name = "Каша гречневая", Price = 50 },
+        new MenuItem { Id = "9084246", Article = "A1004293", Name = "Конфеты Коровка", Price = 300 }
     ];
 
     private sealed class TestConsoleIO(params string[] input) : IConsoleIO

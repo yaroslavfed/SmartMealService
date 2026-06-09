@@ -13,10 +13,10 @@ public class JsonContractTests
         {
             Id = "5979224",
             Article = "A1004292",
-            Name = "Buckwheat",
+            Name = "Каша гречневая",
             Price = 50,
             IsWeighted = false,
-            FullPath = @"Production\Sides",
+            FullPath = @"ПРОИЗВОДСТВО\Гарниры",
             Barcodes = ["57890975627974236429"]
         };
 
@@ -26,10 +26,10 @@ public class JsonContractTests
         var root = document.RootElement;
         root.GetProperty("Id").GetString().Should().Be("5979224");
         root.GetProperty("Article").GetString().Should().Be("A1004292");
-        root.GetProperty("Name").GetString().Should().Be("Buckwheat");
+        root.GetProperty("Name").GetString().Should().Be("Каша гречневая");
         root.GetProperty("Price").GetDecimal().Should().Be(50m);
         root.GetProperty("IsWeighted").GetBoolean().Should().BeFalse();
-        root.GetProperty("FullPath").GetString().Should().Be(@"Production\Sides");
+        root.GetProperty("FullPath").GetString().Should().Be(@"ПРОИЗВОДСТВО\Гарниры");
         root.GetProperty("Barcodes").EnumerateArray().Should().ContainSingle()
             .Which.GetString().Should().Be("57890975627974236429");
     }
