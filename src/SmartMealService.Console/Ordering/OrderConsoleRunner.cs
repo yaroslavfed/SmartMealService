@@ -15,20 +15,24 @@ public class OrderConsoleRunner(
 {
     public async Task RunAsync(CancellationToken cancellationToken = default)
     {
-        await menuRepository.InitializeAsync(cancellationToken);
-
         List<MenuItem> menuItems;
         try
         {
+            await menuRepository.InitializeAsync(cancellationToken);
             menuItems = await smsClient.GetMenuAsync(cancellationToken);
+            await menuRepository.SaveMenuAsync(menuItems, cancellationToken);
         }
         catch (SmsApiException ex)
         {
             console.WriteLine(ex.Message);
             return;
         }
+        catch (Exception ex)
+        {
+            WriteInfrastructureError(ex);
+            return;
+        }
 
-        await menuRepository.SaveMenuAsync(menuItems, cancellationToken);
         WriteMenu(menuItems);
 
         var order = ReadOrder(menuItems);
@@ -73,5 +77,14 @@ public class OrderConsoleRunner(
         {
             console.WriteLine(ex.Message);
         }
+        catch (Exception ex)
+        {
+            WriteInfrastructureError(ex);
+        }
+    }
+
+    private void WriteInfrastructureError(Exception exception)
+    {
+        console.WriteLine($"\u041e\u0448\u0438\u0431\u043a\u0430 \u0432\u044b\u043f\u043e\u043b\u043d\u0435\u043d\u0438\u044f: {exception.Message}");
     }
 }

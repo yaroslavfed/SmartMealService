@@ -1,10 +1,13 @@
+using Autofac;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using SmartMealService.Console.ConsoleIO;
 using SmartMealService.Console.Ordering;
+using SmartMealService.Console.Persistence;
 using SmartMealService.Console.Persistence.EfCore;
 using SmartMealService.Http;
+using SmartMealService.Shared.Abstractions;
 
 namespace SmartMealService.Console.Startup;
 
@@ -15,13 +18,39 @@ public static class ConsoleAppFactory
         var configuration = LoadConfiguration(basePath);
         ConfigureLogging();
 
-        var console = new LoggingConsoleIO();
-        var smsClient = CreateSmsClient(configuration);
-        var dbContext = CreateMenuDbContext(configuration);
-        var menuRepository = new EfMenuRepository(dbContext);
-        var runner = new OrderConsoleRunner(smsClient, menuRepository, console);
+        var container = BuildContainer(configuration);
+        return new ConsoleApplication(container);
+    }
 
-        return new ConsoleApplication(runner, dbContext);
+    internal static IContainer BuildContainer(IConfiguration configuration)
+    {
+        var builder = new ContainerBuilder();
+
+        builder.RegisterInstance(configuration).As<IConfiguration>().SingleInstance();
+        builder.RegisterType<LoggingConsoleIO>().As<IConsoleIO>().SingleInstance();
+        builder.RegisterType<EfMenuRepository>().As<IMenuRepository>().InstancePerLifetimeScope();
+        builder.RegisterType<OrderConsoleRunner>().InstancePerLifetimeScope();
+
+        builder.Register(context =>
+            new SmsHttpClient(
+                RequiredSetting(context.Resolve<IConfiguration>(), "SmsHttp:BaseUrl"),
+                RequiredSetting(context.Resolve<IConfiguration>(), "SmsHttp:Username"),
+                RequiredSetting(context.Resolve<IConfiguration>(), "SmsHttp:Password")))
+            .As<ISmsClient>()
+            .SingleInstance();
+
+        builder.Register(context =>
+            {
+                var configuration = context.Resolve<IConfiguration>();
+                var options = new DbContextOptionsBuilder<MenuDbContext>()
+                    .UseNpgsql(RequiredConnectionString(configuration, "DefaultConnection"))
+                    .Options;
+
+                return new MenuDbContext(options);
+            })
+            .InstancePerLifetimeScope();
+
+        return builder.Build();
     }
 
     private static IConfigurationRoot LoadConfiguration(string basePath) =>
@@ -36,21 +65,6 @@ public static class ConsoleAppFactory
             .WriteTo.Console()
             .WriteTo.File($"logs/test-sms-console-app-{DateTime.Now:yyyyMMdd}.log")
             .CreateLogger();
-    }
-
-    private static SmsHttpClient CreateSmsClient(IConfiguration configuration) =>
-        new(
-            RequiredSetting(configuration, "SmsHttp:BaseUrl"),
-            RequiredSetting(configuration, "SmsHttp:Username"),
-            RequiredSetting(configuration, "SmsHttp:Password"));
-
-    private static MenuDbContext CreateMenuDbContext(IConfiguration configuration)
-    {
-        var options = new DbContextOptionsBuilder<MenuDbContext>()
-            .UseNpgsql(RequiredConnectionString(configuration, "DefaultConnection"))
-            .Options;
-
-        return new MenuDbContext(options);
     }
 
     private static string RequiredConnectionString(IConfiguration configuration, string name)

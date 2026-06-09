@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SmartMealService.Console.Persistence.EfCore;
 using SmartMealService.Shared.Models;
 
-namespace SmartMealService.Console.Tests;
+namespace SmartMealService.Console.Tests.Persistence;
 
 public class EfMenuRepositoryTests
 {
@@ -30,10 +30,10 @@ public class EfMenuRepositoryTests
             {
                 Id = "5979224",
                 Article = "A1004292",
-                Name = "Каша гречневая",
+                Name = "Buckwheat",
                 Price = 50,
                 IsWeighted = false,
-                FullPath = @"ПРОИЗВОДСТВО\Гарниры",
+                FullPath = @"Production\Sides",
                 Barcodes = ["57890975627974236429"]
             }
         };
@@ -44,7 +44,7 @@ public class EfMenuRepositoryTests
         var entity = await dbContext.MenuItems.SingleAsync();
         entity.Id.Should().Be("5979224");
         entity.Article.Should().Be("A1004292");
-        entity.Name.Should().Be("Каша гречневая");
+        entity.Name.Should().Be("Buckwheat");
         entity.Price.Should().Be(50m);
         entity.Barcodes.Should().ContainSingle().Which.Should().Be("57890975627974236429");
     }
@@ -58,11 +58,11 @@ public class EfMenuRepositoryTests
         await repository.InitializeAsync();
         await repository.SaveMenuAsync(
         [
-            new MenuItem { Id = "5979224", Article = "A1004292", Name = "Каша", Price = 50 }
+            new MenuItem { Id = "5979224", Article = "A1004292", Name = "Buckwheat", Price = 50 }
         ]);
         await repository.SaveMenuAsync(
         [
-            new MenuItem { Id = "9084246", Article = "A1004293", Name = "Конфеты", Price = 300 }
+            new MenuItem { Id = "9084246", Article = "A1004293", Name = "Candy", Price = 300 }
         ]);
 
         var storedIds = await dbContext.MenuItems.Select(i => i.Id).ToListAsync();

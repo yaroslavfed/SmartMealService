@@ -1,20 +1,18 @@
 using FluentAssertions;
-using SmartMealService.Console.Input;
 using SmartMealService.Console.Exceptions;
+using SmartMealService.Console.Input;
 using SmartMealService.Shared.Models;
 
-namespace SmartMealService.Console.Tests;
+namespace SmartMealService.Console.Tests.Input;
 
 public class OrderInputParserTests
 {
     private readonly List<MenuItem> _availableItems =
     [
-        new MenuItem { Id = "5979224", Article = "A1004292", Name = "???? ?????????", Price = 50 },
-        new MenuItem { Id = "9084246", Article = "A1004293", Name = "??????? ???????", Price = 300 },
-        new MenuItem { Id = "1111111", Article = "A1004294", Name = "???", Price = 120 }
+        new MenuItem { Id = "5979224", Article = "A1004292", Name = "Buckwheat", Price = 50 },
+        new MenuItem { Id = "9084246", Article = "A1004293", Name = "Candy", Price = 300 },
+        new MenuItem { Id = "1111111", Article = "A1004294", Name = "Soup", Price = 120 }
     ];
-
-    // --- ???????? ??????? ---
 
     [Fact]
     public void Parse_ShouldReturnOrderItems_WhenInputIsValid()
@@ -46,8 +44,6 @@ public class OrderInputParserTests
             .Which.Id.Should().Be("1111111");
     }
 
-    // --- ?????????? ???? ---
-
     [Fact]
     public void Parse_ShouldThrowException_WhenCodeDoesNotExist()
     {
@@ -65,8 +61,6 @@ public class OrderInputParserTests
         act.Should().Throw<OrderInputException>()
             .WithMessage("*9999999*");
     }
-
-    // --- ?????????? ?????????? ---
 
     [Fact]
     public void Parse_ShouldThrowException_WhenQuantityIsZero()
@@ -95,12 +89,10 @@ public class OrderInputParserTests
             .WithMessage("*5979224*");
     }
 
-    // --- ?????????? ?????? ?????? ---
-
     [Fact]
     public void Parse_ShouldThrowException_WhenFormatIsInvalid()
     {
-        var act = () => OrderInputParser.Parse("?????????? ????", _availableItems);
+        var act = () => OrderInputParser.Parse("invalid input", _availableItems);
 
         act.Should().Throw<OrderInputException>();
     }

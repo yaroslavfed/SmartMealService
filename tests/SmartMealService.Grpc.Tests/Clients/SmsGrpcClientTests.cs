@@ -160,7 +160,7 @@ public class SmsGrpcClientTests
     }
 
     [Fact]
-    public async Task SendOrder_ShouldPassCorrectOrderId_ToGrpcClient()
+    public async Task SendOrder_ShouldPassAllOrderItems_ToGrpcClient()
     {
         var grpcResponse = new Sms.Test.SendOrderResponse { Success = true };
         GrpcOrder? capturedRequest = null;
@@ -177,11 +177,16 @@ public class SmsGrpcClientTests
 
         var order = new Order { Id = "62137983-1117-4D10-87C1-EF40A4348250" };
         order.Items.Add(new OrderItem { Id = "5979224", Quantity = 1 });
+        order.Items.Add(new OrderItem { Id = "9084246", Quantity = 0.408 });
 
         await _client.SendOrderAsync(order);
 
         capturedRequest.Should().NotBeNull();
         capturedRequest!.Id.Should().Be("62137983-1117-4D10-87C1-EF40A4348250");
-        capturedRequest.OrderItems.Should().ContainSingle(i => i.Id == "5979224");
+        capturedRequest.OrderItems.Should().HaveCount(2);
+        capturedRequest.OrderItems[0].Id.Should().Be("5979224");
+        capturedRequest.OrderItems[0].Quantity.Should().Be(1);
+        capturedRequest.OrderItems[1].Id.Should().Be("9084246");
+        capturedRequest.OrderItems[1].Quantity.Should().BeApproximately(0.408, 0.0001);
     }
 }

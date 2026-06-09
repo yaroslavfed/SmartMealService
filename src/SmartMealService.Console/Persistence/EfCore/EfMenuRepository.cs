@@ -7,7 +7,10 @@ public class EfMenuRepository(MenuDbContext dbContext) : IMenuRepository
 {
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
-        await dbContext.Database.EnsureCreatedAsync(cancellationToken);
+        if (dbContext.Database.IsRelational())
+            await dbContext.Database.MigrateAsync(cancellationToken);
+        else
+            await dbContext.Database.EnsureCreatedAsync(cancellationToken);
     }
 
     public async Task SaveMenuAsync(IEnumerable<MenuItem> menuItems, CancellationToken cancellationToken = default)
