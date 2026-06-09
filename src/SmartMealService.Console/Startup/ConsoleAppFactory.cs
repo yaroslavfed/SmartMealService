@@ -62,7 +62,6 @@ public static class ConsoleAppFactory
     private static void ConfigureLogging()
     {
         Log.Logger = new LoggerConfiguration()
-            .WriteTo.Console()
             .WriteTo.File($"logs/test-sms-console-app-{DateTime.Now:yyyyMMdd}.log")
             .CreateLogger();
     }

@@ -19,6 +19,7 @@ public class MenuDbContext(DbContextOptions<MenuDbContext> options) : DbContext(
             entity.Property(i => i.IsWeighted).HasColumnName("is_weighted");
             entity.Property(i => i.FullPath).HasColumnName("full_path").IsRequired();
             entity.Property(i => i.BarcodesJson).HasColumnName("barcodes_json").IsRequired();
+            entity.Ignore(i => i.Barcodes);
         });
     }
 }

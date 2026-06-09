@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 using SmartMealService.Shared.Models;
 
@@ -13,6 +14,7 @@ public class MenuItemEntity
     public string FullPath { get; set; } = string.Empty;
     public string BarcodesJson { get; set; } = "[]";
 
+    [NotMapped]
     public List<string> Barcodes
     {
         get => JsonSerializer.Deserialize<List<string>>(BarcodesJson) ?? [];
