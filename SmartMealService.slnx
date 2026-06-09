@@ -8,6 +8,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/SmartMealService.Console.Tests/SmartMealService.Console.Tests.csproj" />
+    <Project Path="tests/SmartMealService.FakeSmsServer/SmartMealService.FakeSmsServer.csproj" />
     <Project Path="tests/SmartMealService.Grpc.Tests/SmartMealService.Grpc.Tests.csproj" />
     <Project Path="tests/SmartMealService.Http.Tests/SmartMealService.Http.Tests.csproj" />
     <Project Path="tests/SmartMealService.Shared.Tests/SmartMealService.Shared.Tests.csproj" />
