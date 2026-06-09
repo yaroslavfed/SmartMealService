@@ -1,83 +1,43 @@
-﻿using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
-using SmartMealService.Http.Requests.Menu;
-using SmartMealService.Http.Requests.Order;
-using SmartMealService.Http.Requests.Order.Parameters;
-using SmartMealService.Http.Responses;
+using SmartMealService.Http.Contracts.GetMenu;
+using SmartMealService.Http.Contracts.SendOrder;
+using SmartMealService.Http.Mapping;
+using SmartMealService.Http.Transport;
+using SmartMealService.Shared.Abstractions;
 using SmartMealService.Shared.Exceptions;
 using SmartMealService.Shared.Models;
 
 namespace SmartMealService.Http;
 
-public class SmsHttpClient
+public class SmsHttpClient : ISmsClient
 {
-    private readonly HttpClient _httpClient;
-
-    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
+    private readonly JsonPostEndpointClient _endpointClient;
 
     public SmsHttpClient(string baseUrl, string username, string password)
     {
-        _httpClient = new HttpClient { BaseAddress = new Uri(baseUrl) };
-        var credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}"));
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
+        _endpointClient = new JsonPostEndpointClient(baseUrl, username, password);
     }
 
-    public async Task<List<MenuItem>> GetMenuAsync()
+    public async Task<List<MenuItem>> GetMenuAsync(CancellationToken cancellationToken = default)
     {
-        var request = new GetMenuRequest();
-        var response = await PostAsync<GetMenuResponse>(request);
+        var response = await _endpointClient.PostAsync<GetMenuResponse>(
+            new GetMenuRequest(),
+            cancellationToken);
 
         if (!response.Success)
             throw new SmsApiException(response.ErrorMessage);
 
-        return response
-               .Data?.MenuItems.Select(dto => new MenuItem
-                   {
-                       Id = dto.Id,
-                       Article = dto.Article,
-                       Name = dto.Name,
-                       Price = dto.Price,
-                       IsWeighted = dto.IsWeighted,
-                       FullPath = dto.FullPath,
-                       Barcodes = dto.Barcodes
-                   }
-               )
-               .ToList()
-               ?? [];
+        return response.Data?.MenuItems.Select(MenuItemMapper.ToModel).ToList() ?? [];
     }
 
-    public async Task<bool> SendOrderAsync(Order order)
+    public async Task<bool> SendOrderAsync(Order order, CancellationToken cancellationToken = default)
     {
-        var request = new SendOrderRequest
-        {
-            CommandParameters = new SendOrderParameters
-            {
-                OrderId = order.Id,
-                MenuItems = order
-                            .Items.Select(i => new SendOrderItem { Id = i.Id, Quantity = i.Quantity.ToString("G") })
-                            .ToList()
-            }
-        };
-
-        var response = await PostAsync<SendOrderResponse>(request);
+        var response = await _endpointClient.PostAsync<SendOrderResponse>(
+            SendOrderRequestFactory.Create(order),
+            cancellationToken);
 
         if (!response.Success)
             throw new SmsApiException(response.ErrorMessage);
 
         return true;
-    }
-
-    private async Task<T> PostAsync<T>(object body)
-    {
-        var json = JsonSerializer.Serialize(body, JsonOptions);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-        var httpResponse = await _httpClient.PostAsync("", content);
-        httpResponse.EnsureSuccessStatusCode();
-
-        var responseJson = await httpResponse.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<T>(responseJson, JsonOptions)
-               ?? throw new InvalidOperationException("Не удалось десериализовать ответ сервера");
     }
 }

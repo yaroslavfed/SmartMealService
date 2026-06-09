@@ -1,5 +1,6 @@
-﻿using Google.Protobuf.WellKnownTypes;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Net.Client;
+using SmartMealService.Shared.Abstractions;
 using SmartMealService.Shared.Exceptions;
 using SmartMealService.Shared.Models;
 using GrpcOrder = Sms.Test.Order;
@@ -8,22 +9,23 @@ using SmsTestService = Sms.Test.SmsTestService;
 
 namespace SmartMealService.Grpc;
 
-public class SmsGrpcClient : ISmsGrpcClient
+public class SmsGrpcClient : ISmsClient
 {
     private readonly SmsTestService.SmsTestServiceClient _client;
 
     public SmsGrpcClient(string address)
-        : this(new SmsTestService.SmsTestServiceClient(
-                   GrpcChannel.ForAddress(address))) { }
+        : this(new SmsTestService.SmsTestServiceClient(GrpcChannel.ForAddress(address)))
+    {
+    }
 
-    public SmsGrpcClient(SmsTestService.SmsTestServiceClient client)
+    internal SmsGrpcClient(SmsTestService.SmsTestServiceClient client)
     {
         _client = client;
     }
 
-    public async Task<List<MenuItem>> GetMenuAsync()
+    public async Task<List<MenuItem>> GetMenuAsync(CancellationToken cancellationToken = default)
     {
-        var response = await _client.GetMenuAsync(new BoolValue { Value = true });
+        var response = await _client.GetMenuAsync(new BoolValue { Value = true }, cancellationToken: cancellationToken);
 
         if (!response.Success)
             throw new SmsApiException(response.ErrorMessage);
@@ -40,7 +42,7 @@ public class SmsGrpcClient : ISmsGrpcClient
         }).ToList();
     }
 
-    public async Task<bool> SendOrderAsync(Order order)
+    public async Task<bool> SendOrderAsync(Order order, CancellationToken cancellationToken = default)
     {
         var request = new GrpcOrder
         {
@@ -55,7 +57,7 @@ public class SmsGrpcClient : ISmsGrpcClient
             }
         };
 
-        var response = await _client.SendOrderAsync(request);
+        var response = await _client.SendOrderAsync(request, cancellationToken: cancellationToken);
 
         if (!response.Success)
             throw new SmsApiException(response.ErrorMessage);
