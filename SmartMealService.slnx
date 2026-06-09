@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SmartMealService.Console/SmartMealService.Console.csproj" />
+    <Project Path="src/SmartMealService.Grpc/SmartMealService.Grpc.csproj" />
+    <Project Path="src/SmartMealService.Http/SmartMealService.Http.csproj" />
+    <Project Path="src/SmartMealService.Shared/SmartMealService.Shared.csproj" />
+    <Project Path="src/SmartMealService.Wpf/SmartMealService.Wpf.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SmartMealService.Console.Tests/SmartMealService.Console.Tests.csproj" />
+    <Project Path="tests/SmartMealService.Grpc.Tests/SmartMealService.Grpc.Tests.csproj" />
+    <Project Path="tests/SmartMealService.Http.Tests/SmartMealService.Http.Tests.csproj" />
+    <Project Path="tests/SmartMealService.Shared.Tests/SmartMealService.Shared.Tests.csproj" />
+    <Project Path="tests/SmartMealService.Wpf.Tests/SmartMealService.Wpf.Tests.csproj" />
+  </Folder>
+</Solution>
