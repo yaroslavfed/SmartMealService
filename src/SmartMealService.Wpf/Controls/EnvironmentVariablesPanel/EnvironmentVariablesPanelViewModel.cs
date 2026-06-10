@@ -13,17 +13,20 @@ public sealed class EnvironmentVariablesPanelViewModel : ReactiveObject, IDispos
     private readonly IEnvironmentVariableStore        _store;
     private readonly IEnvironmentVariableChangeLogger _logger;
     private readonly CompositeDisposable              _subscriptions = [];
+    private readonly IReadOnlyDictionary<string, string> _defaultValues;
 
     public EnvironmentVariablesPanelViewModel(
         IReadOnlyCollection<string> environmentVariableNames,
         IEnvironmentVariableStore store,
         IEnvironmentVariableChangeLogger logger,
+        IReadOnlyDictionary<string, string>? defaultValues = null,
         IReadOnlyDictionary<string, string>? comments = null
     )
     {
         ReactiveUiBootstrapper.EnsureInitialized();
         _store = store;
         _logger = logger;
+        _defaultValues = defaultValues ?? new Dictionary<string, string>();
         Comments = comments ?? new Dictionary<string, string>();
 
         EnvironmentVariables = new(environmentVariableNames.Select(CreateRow));
@@ -38,7 +41,7 @@ public sealed class EnvironmentVariablesPanelViewModel : ReactiveObject, IDispos
         var storedValue = _store.GetValue(name);
         if (storedValue is null)
         {
-            storedValue = string.Empty;
+            storedValue = _defaultValues.GetValueOrDefault(name, string.Empty);
             _store.SetValue(name, storedValue);
             _logger.LogChanged(name, storedValue);
         }

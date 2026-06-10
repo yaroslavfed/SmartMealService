@@ -14,12 +14,13 @@ public static class WpfAppFactory
     public static IContainer Create(string basePath)
     {
         var options = LoadEnvironmentVariableOptions(basePath);
-        return BuildServices(options.Names, Path.Combine(basePath, "logs"), options.Comments);
+        return BuildServices(options.Names, Path.Combine(basePath, "logs"), options.Defaults, options.Comments);
     }
 
     public static IContainer BuildServices(
         IReadOnlyCollection<string> environmentVariableNames,
         string logDirectory,
+        IReadOnlyDictionary<string, string>? defaultValues = null,
         IReadOnlyDictionary<string, string>? comments = null)
     {
         ReactiveUiBootstrapper.EnsureInitialized();
@@ -27,8 +28,11 @@ public static class WpfAppFactory
 
         var builder = new ContainerBuilder();
         builder.RegisterInstance(environmentVariableNames).As<IReadOnlyCollection<string>>().SingleInstance();
-        builder.RegisterInstance(comments ?? new Dictionary<string, string>())
+        builder.RegisterInstance(defaultValues ?? new Dictionary<string, string>())
             .As<IReadOnlyDictionary<string, string>>()
+            .SingleInstance();
+        builder.RegisterInstance(comments ?? new Dictionary<string, string>())
+            .Named<IReadOnlyDictionary<string, string>>("EnvironmentVariableComments")
             .SingleInstance();
 
         ServiceInstaller.Install(builder);

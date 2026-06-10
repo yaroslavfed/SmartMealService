@@ -70,6 +70,7 @@ public class WpfAppFactoryTests
 
         options.Comments.Keys.Should().OnlyContain(name => options.Names.Contains(name));
         options.Comments.Values.Should().OnlyContain(comment => !string.IsNullOrWhiteSpace(comment));
+        options.Defaults.Keys.Should().OnlyContain(name => options.Names.Contains(name));
     }
 
     [Fact]

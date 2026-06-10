@@ -40,13 +40,39 @@ public class EnvironmentVariablesPanelViewModelTests
             ["SMS_HTTP_BASE_URL"] = "Адрес SMS HTTP-сервера"
         };
 
-        var viewModel = new EnvironmentVariablesPanelViewModel(["SMS_HTTP_BASE_URL"], store.Object, logger.Object, comments);
+        var viewModel = new EnvironmentVariablesPanelViewModel(
+            ["SMS_HTTP_BASE_URL"],
+            store.Object,
+            logger.Object,
+            comments: comments);
 
         viewModel.EnvironmentVariables[0].Comment.Should().Be("Адрес SMS HTTP-сервера");
     }
 
     [Fact]
     public void Constructor_ShouldInitializeMissingVariablesWithDefaultValue()
+    {
+        var store = new Mock<IEnvironmentVariableStore>();
+        var logger = new Mock<IEnvironmentVariableChangeLogger>();
+        store.Setup(s => s.GetValue("SMS_HTTP_PASSWORD")).Returns((string?)null);
+
+        var defaultValues = new Dictionary<string, string>
+        {
+            ["SMS_HTTP_PASSWORD"] = "testpass"
+        };
+
+        _ = new EnvironmentVariablesPanelViewModel(
+            ["SMS_HTTP_PASSWORD"],
+            store.Object,
+            logger.Object,
+            defaultValues);
+
+        store.Verify(s => s.SetValue("SMS_HTTP_PASSWORD", "testpass"), Times.Once);
+        logger.Verify(l => l.LogChanged("SMS_HTTP_PASSWORD", "testpass"), Times.Once);
+    }
+
+    [Fact]
+    public void Constructor_ShouldUseEmptyDefaultValue_WhenDefaultIsNotConfigured()
     {
         var store = new Mock<IEnvironmentVariableStore>();
         var logger = new Mock<IEnvironmentVariableChangeLogger>();
