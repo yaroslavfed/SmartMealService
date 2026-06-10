@@ -7,6 +7,7 @@ public sealed class WindowsEnvironmentVariableChangeNotifier : IEnvironmentVaria
     private static readonly IntPtr BroadcastWindow = new(0xffff);
     private const int SettingChangeMessage = 0x001A;
     private const int AbortIfHung = 0x0002;
+    private const int BroadcastTimeoutMilliseconds = 100;
 
     public void NotifyChanged()
     {
@@ -16,7 +17,7 @@ public sealed class WindowsEnvironmentVariableChangeNotifier : IEnvironmentVaria
             UIntPtr.Zero,
             "Environment",
             AbortIfHung,
-            5000,
+            BroadcastTimeoutMilliseconds,
             out _);
     }
 

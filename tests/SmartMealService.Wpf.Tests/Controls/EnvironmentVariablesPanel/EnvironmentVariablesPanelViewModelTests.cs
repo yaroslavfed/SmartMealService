@@ -67,8 +67,19 @@ public class EnvironmentVariablesPanelViewModelTests
             logger.Object,
             defaultValues);
 
-        store.Verify(s => s.SetValue("SMS_HTTP_PASSWORD", "testpass"), Times.Once);
-        logger.Verify(l => l.LogChanged("SMS_HTTP_PASSWORD", "testpass"), Times.Once);
+        SpinWait.SpinUntil(() =>
+        {
+            try
+            {
+                store.Verify(s => s.SetValue("SMS_HTTP_PASSWORD", "testpass"), Times.Once);
+                logger.Verify(l => l.LogChanged("SMS_HTTP_PASSWORD", "testpass"), Times.Once);
+                return true;
+            }
+            catch (MockException)
+            {
+                return false;
+            }
+        }, TimeSpan.FromSeconds(1)).Should().BeTrue();
     }
 
     [Fact]
@@ -80,8 +91,19 @@ public class EnvironmentVariablesPanelViewModelTests
 
         _ = new EnvironmentVariablesPanelViewModel(["SMS_HTTP_PASSWORD"], store.Object, logger.Object);
 
-        store.Verify(s => s.SetValue("SMS_HTTP_PASSWORD", ""), Times.Once);
-        logger.Verify(l => l.LogChanged("SMS_HTTP_PASSWORD", ""), Times.Once);
+        SpinWait.SpinUntil(() =>
+        {
+            try
+            {
+                store.Verify(s => s.SetValue("SMS_HTTP_PASSWORD", ""), Times.Once);
+                logger.Verify(l => l.LogChanged("SMS_HTTP_PASSWORD", ""), Times.Once);
+                return true;
+            }
+            catch (MockException)
+            {
+                return false;
+            }
+        }, TimeSpan.FromSeconds(1)).Should().BeTrue();
     }
 
     [Fact]
@@ -94,7 +116,18 @@ public class EnvironmentVariablesPanelViewModelTests
 
         viewModel.EnvironmentVariables[0].Value = "http://localhost:5001";
 
-        store.Verify(s => s.SetValue("SMS_HTTP_BASE_URL", "http://localhost:5001"), Times.Once);
-        logger.Verify(l => l.LogChanged("SMS_HTTP_BASE_URL", "http://localhost:5001"), Times.Once);
+        SpinWait.SpinUntil(() =>
+        {
+            try
+            {
+                store.Verify(s => s.SetValue("SMS_HTTP_BASE_URL", "http://localhost:5001"), Times.Once);
+                logger.Verify(l => l.LogChanged("SMS_HTTP_BASE_URL", "http://localhost:5001"), Times.Once);
+                return true;
+            }
+            catch (MockException)
+            {
+                return false;
+            }
+        }, TimeSpan.FromSeconds(1)).Should().BeTrue();
     }
 }

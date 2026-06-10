@@ -42,24 +42,32 @@ public sealed class EnvironmentVariablesPanelViewModel : ReactiveObject, IDispos
         if (storedValue is null)
         {
             storedValue = _defaultValues.GetValueOrDefault(name, string.Empty);
-            _store.SetValue(name, storedValue);
-            _logger.LogChanged(name, storedValue);
+            PersistValue(name, storedValue);
         }
 
         var row = new EnvironmentVariableRow(name, storedValue, Comments.GetValueOrDefault(name, string.Empty));
         var subscription = row
                            .WhenAnyValue(x => x.Value)
                            .Skip(1)
+                           .DistinctUntilChanged()
                            .Subscribe(value =>
                                {
-                                   _store.SetValue(row.Name, value);
-                                   _logger.LogChanged(row.Name, value);
+                                   PersistValue(row.Name, value);
                                }
                            );
 
         _subscriptions.Add(subscription);
 
         return row;
+    }
+
+    private void PersistValue(string name, string value)
+    {
+        _ = Task.Run(() =>
+        {
+            _store.SetValue(name, value);
+            _logger.LogChanged(name, value);
+        });
     }
 
     public void Dispose()
