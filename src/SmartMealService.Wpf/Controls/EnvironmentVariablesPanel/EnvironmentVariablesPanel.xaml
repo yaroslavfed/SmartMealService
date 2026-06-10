@@ -70,7 +70,7 @@
                                             Width="2*"
                                             ElementStyle="{StaticResource WrappedTextBlockStyle}" />
                         <DataGridTextColumn Header="Значение"
-                                            Binding="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Binding="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=500}"
                                             Width="2*"
                                             ElementStyle="{StaticResource WrappedTextBlockStyle}"
                                             EditingElementStyle="{StaticResource ValueTextBoxStyle}" />
