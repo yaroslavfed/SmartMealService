@@ -35,7 +35,7 @@
            TargetType="Button"
            BasedOn="{StaticResource CaptionButtonBaseStyle}">
         <Setter Property="FontFamily" Value="Segoe UI" />
-        <Setter Property="FontSize" Value="32" />
+        <Setter Property="FontSize" Value="28" />
         <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
 
@@ -43,7 +43,7 @@
            TargetType="Button"
            BasedOn="{StaticResource CaptionButtonBaseStyle}">
         <Setter Property="FontFamily" Value="Arial Black" />
-        <Setter Property="FontSize" Value="36" />
-        <Setter Property="FontWeight" Value="Black" />
+        <Setter Property="FontSize" Value="28" />
+        <Setter Property="FontWeight" Value="Bold" />
     </Style>
 </ResourceDictionary>

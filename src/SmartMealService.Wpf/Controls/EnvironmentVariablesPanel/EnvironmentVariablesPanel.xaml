@@ -4,6 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:panel="clr-namespace:SmartMealService.Wpf.Controls.EnvironmentVariablesPanel"
+             xmlns:wpf="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=panel:EnvironmentVariablesPanelViewModel}">
     <UserControl.Resources>
@@ -36,7 +37,9 @@
 
             <Grid Grid.Row="0">
                 <TextBlock Text="Тестовое WPF-приложение для SmartMealService"
+                           HorizontalAlignment="Left"
                            VerticalAlignment="Top"
+                           Margin="0 4 0 0"
                            FontSize="16"
                            FontWeight="SemiBold"
                            Foreground="{StaticResource PrimaryTextBrush}" />
@@ -44,10 +47,10 @@
                 <StackPanel HorizontalAlignment="Right"
                             VerticalAlignment="Top"
                             Orientation="Horizontal">
-                    <Button Content="–"
+                    <Button Content="{wpf:MaterialIconExt Kind=Minus}"
                             Style="{StaticResource MinimizeButtonStyle}"
                             Click="MinimizeButton_Click" />
-                    <Button Content="✕"
+                    <Button Content="{wpf:MaterialIconExt Kind=CloseThick}"
                             Style="{StaticResource CloseButtonStyle}"
                             Click="CloseButton_Click" />
                 </StackPanel>
