@@ -1,6 +1,6 @@
 using NLog;
 
-namespace SmartMealService.Wpf.Services;
+namespace SmartMealService.Wpf.Services.EnvironmentVariables.EnvironmentVariableLogging;
 
 public sealed class NLogEnvironmentVariableChangeLogger : IEnvironmentVariableChangeLogger
 {

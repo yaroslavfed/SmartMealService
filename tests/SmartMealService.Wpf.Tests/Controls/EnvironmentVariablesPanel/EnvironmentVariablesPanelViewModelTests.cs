@@ -1,11 +1,13 @@
 using FluentAssertions;
 using Moq;
-using SmartMealService.Wpf.Services;
-using SmartMealService.Wpf.ViewModels;
+using SmartMealService.Wpf.Controls.EnvironmentVariablesPanel;
+using SmartMealService.Wpf.Services.EnvironmentVariables;
+using SmartMealService.Wpf.Services.EnvironmentVariables.EnvironmentVariableLogging;
+using SmartMealService.Wpf.Services.EnvironmentVariables.EnvironmentVariableStore;
 
-namespace SmartMealService.Wpf.Tests.ViewModels;
+namespace SmartMealService.Wpf.Tests.Controls.EnvironmentVariablesPanel;
 
-public class MainViewModelTests
+public class EnvironmentVariablesPanelViewModelTests
 {
     [Fact]
     public void Constructor_ShouldLoadConfiguredEnvironmentVariables()
@@ -15,7 +17,7 @@ public class MainViewModelTests
         store.Setup(s => s.GetValue("SMS_HTTP_BASE_URL")).Returns("http://localhost:5000");
         store.Setup(s => s.GetValue("SMS_HTTP_USERNAME")).Returns((string?)null);
 
-        var viewModel = new MainViewModel(
+        var viewModel = new EnvironmentVariablesPanelViewModel(
             ["SMS_HTTP_BASE_URL", "SMS_HTTP_USERNAME"],
             store.Object,
             logger.Object);
@@ -38,7 +40,7 @@ public class MainViewModelTests
             ["SMS_HTTP_BASE_URL"] = "Адрес SMS HTTP-сервера"
         };
 
-        var viewModel = new MainViewModel(["SMS_HTTP_BASE_URL"], store.Object, logger.Object, comments);
+        var viewModel = new EnvironmentVariablesPanelViewModel(["SMS_HTTP_BASE_URL"], store.Object, logger.Object, comments);
 
         viewModel.EnvironmentVariables[0].Comment.Should().Be("Адрес SMS HTTP-сервера");
     }
@@ -50,7 +52,7 @@ public class MainViewModelTests
         var logger = new Mock<IEnvironmentVariableChangeLogger>();
         store.Setup(s => s.GetValue("SMS_HTTP_PASSWORD")).Returns((string?)null);
 
-        _ = new MainViewModel(["SMS_HTTP_PASSWORD"], store.Object, logger.Object);
+        _ = new EnvironmentVariablesPanelViewModel(["SMS_HTTP_PASSWORD"], store.Object, logger.Object);
 
         store.Verify(s => s.SetValue("SMS_HTTP_PASSWORD", ""), Times.Once);
         logger.Verify(l => l.LogChanged("SMS_HTTP_PASSWORD", ""), Times.Once);
@@ -62,7 +64,7 @@ public class MainViewModelTests
         var store = new Mock<IEnvironmentVariableStore>();
         var logger = new Mock<IEnvironmentVariableChangeLogger>();
         store.Setup(s => s.GetValue("SMS_HTTP_BASE_URL")).Returns("http://localhost:5000");
-        var viewModel = new MainViewModel(["SMS_HTTP_BASE_URL"], store.Object, logger.Object);
+        var viewModel = new EnvironmentVariablesPanelViewModel(["SMS_HTTP_BASE_URL"], store.Object, logger.Object);
 
         viewModel.EnvironmentVariables[0].Value = "http://localhost:5001";
 

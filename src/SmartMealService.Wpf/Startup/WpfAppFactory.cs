@@ -4,9 +4,8 @@ using Microsoft.Extensions.Configuration;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
-using SmartMealService.Wpf.Configuration;
-using SmartMealService.Wpf.Services;
-using SmartMealService.Wpf.ViewModels;
+using SmartMealService.Wpf.Installers;
+using SmartMealService.Wpf.Startup.Configuration;
 
 namespace SmartMealService.Wpf.Startup;
 
@@ -31,10 +30,10 @@ public static class WpfAppFactory
         builder.RegisterInstance(comments ?? new Dictionary<string, string>())
             .As<IReadOnlyDictionary<string, string>>()
             .SingleInstance();
-        builder.RegisterType<UserEnvironmentVariableStore>().As<IEnvironmentVariableStore>().SingleInstance();
-        builder.RegisterType<NLogEnvironmentVariableChangeLogger>().As<IEnvironmentVariableChangeLogger>().SingleInstance();
-        builder.RegisterType<MainViewModel>().SingleInstance();
-        builder.RegisterType<MainWindow>().InstancePerDependency();
+
+        ServiceInstaller.Install(builder);
+        ViewModelInstaller.Install(builder);
+        WindowInstaller.Install(builder);
 
         return builder.Build();
     }

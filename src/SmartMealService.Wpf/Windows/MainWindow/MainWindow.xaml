@@ -1,0 +1,33 @@
+<reactiveUi:ReactiveWindow x:Class="SmartMealService.Wpf.Windows.MainWindow.MainWindow"
+                           x:TypeArguments="windows:MainWindowViewModel"
+                           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                           xmlns:controls="clr-namespace:SmartMealService.Wpf.Controls.EnvironmentVariablesPanel"
+                           xmlns:reactiveUi="clr-namespace:ReactiveUI;assembly=ReactiveUI.Wpf"
+                           xmlns:windows="clr-namespace:SmartMealService.Wpf.Windows.MainWindow"
+                           Title="Тестовое WPF-приложение для SmartMealService"
+                           Width="900"
+                           Height="420"
+                           MinWidth="720"
+                           MinHeight="320"
+                           WindowStartupLocation="CenterScreen"
+                           WindowStyle="None"
+                           AllowsTransparency="True"
+                           Background="Transparent">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/SmartMealService.Wpf;component/Styles/Colors.xaml" />
+                <ResourceDictionary Source="/SmartMealService.Wpf;component/Styles/Spacing.xaml" />
+                <ResourceDictionary Source="/SmartMealService.Wpf;component/Styles/WindowStyles.xaml" />
+                <ResourceDictionary Source="/SmartMealService.Wpf;component/Styles/DataGridStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Border Background="{StaticResource ShellBackgroundBrush}"
+            Padding="{StaticResource ShellPadding}"
+            MouseLeftButtonDown="WindowDragArea_MouseLeftButtonDown">
+        <controls:EnvironmentVariablesPanel DataContext="{Binding EnvironmentVariablesPanel}" />
+    </Border>
+</reactiveUi:ReactiveWindow>

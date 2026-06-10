@@ -1,7 +1,7 @@
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace SmartMealService.Wpf.ViewModels;
+namespace SmartMealService.Wpf.Controls.EnvironmentVariablesPanel;
 
 public sealed class EnvironmentVariableRow : ReactiveObject
 {

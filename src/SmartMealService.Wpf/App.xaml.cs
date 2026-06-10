@@ -2,6 +2,7 @@ using System.Windows;
 using Autofac;
 using NLog;
 using SmartMealService.Wpf.Startup;
+using SmartMealService.Wpf.Windows.MainWindow;
 
 namespace SmartMealService.Wpf;
 

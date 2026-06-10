@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
 
-namespace SmartMealService.Wpf.Configuration;
+namespace SmartMealService.Wpf.Startup.Configuration;
 
 public sealed class EnvironmentVariableOptions
 {

@@ -1,8 +1,8 @@
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
-using SmartMealService.Wpf.Configuration;
+using SmartMealService.Wpf.Startup.Configuration;
 
-namespace SmartMealService.Wpf.Tests.Configuration;
+namespace SmartMealService.Wpf.Tests.Startup.Configuration;
 
 public class EnvironmentVariableOptionsTests
 {

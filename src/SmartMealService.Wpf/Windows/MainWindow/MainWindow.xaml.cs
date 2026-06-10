@@ -2,22 +2,23 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using SmartMealService.Wpf.ViewModels;
+using ReactiveUI;
 
-namespace SmartMealService.Wpf;
+namespace SmartMealService.Wpf.Windows.MainWindow;
 
-public partial class MainWindow : Window
+public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 {
-    public MainWindow(MainViewModel viewModel)
+    public MainWindow(MainWindowViewModel viewModel)
     {
         InitializeComponent();
+        ViewModel = viewModel;
         DataContext = viewModel;
     }
 
     private void WindowDragArea_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        if (e.OriginalSource is DependencyObject source &&
-            (FindAncestor<DataGrid>(source) is not null || FindAncestor<Button>(source) is not null))
+        if (e.OriginalSource is DependencyObject source
+            && (FindAncestor<DataGrid>(source) is not null || FindAncestor<Button>(source) is not null))
         {
             return;
         }
@@ -27,8 +28,8 @@ public partial class MainWindow : Window
 
         DragMove();
     }
-    private static T? FindAncestor<T>(DependencyObject source)
-        where T : DependencyObject
+
+    private static T? FindAncestor<T>(DependencyObject source) where T : DependencyObject
     {
         var current = source;
         while (current is not null)

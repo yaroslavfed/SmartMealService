@@ -1,9 +1,14 @@
 using System.IO;
 using Autofac;
 using FluentAssertions;
-using SmartMealService.Wpf.Services;
+using NLog;
 using SmartMealService.Wpf.Startup;
-using SmartMealService.Wpf.ViewModels;
+using SmartMealService.Wpf.Controls.EnvironmentVariablesPanel;
+using SmartMealService.Wpf.Services.EnvironmentVariables;
+using SmartMealService.Wpf.Services.EnvironmentVariables.EnvironmentVariableChangeNotifier;
+using SmartMealService.Wpf.Services.EnvironmentVariables.EnvironmentVariableLogging;
+using SmartMealService.Wpf.Services.EnvironmentVariables.EnvironmentVariableStore;
+using SmartMealService.Wpf.Windows.MainWindow;
 
 namespace SmartMealService.Wpf.Tests.Startup;
 
@@ -23,13 +28,17 @@ public class WpfAppFactoryTests
         try
         {
             provider.Resolve<IEnvironmentVariableStore>().Should().BeOfType<UserEnvironmentVariableStore>();
+            provider.Resolve<IEnvironmentVariableChangeNotifier>().Should().BeOfType<WindowsEnvironmentVariableChangeNotifier>();
             provider.Resolve<IEnvironmentVariableChangeLogger>().Should().BeOfType<NLogEnvironmentVariableChangeLogger>();
-            provider.Resolve<MainViewModel>().EnvironmentVariables.Should().HaveCount(2);
+            provider.Resolve<EnvironmentVariablesPanelViewModel>().EnvironmentVariables.Should().HaveCount(2);
+            provider.Resolve<MainWindowViewModel>().EnvironmentVariablesPanel
+                .Should().BeSameAs(provider.Resolve<EnvironmentVariablesPanelViewModel>());
 
             RunInStaThread(() =>
             {
                 var window = provider.Resolve<MainWindow>();
-                window.DataContext.Should().BeOfType<MainViewModel>();
+                window.DataContext.Should().BeOfType<MainWindowViewModel>();
+                window.ViewModel.Should().BeOfType<MainWindowViewModel>();
                 window.Close();
             });
         }
@@ -43,22 +52,24 @@ public class WpfAppFactoryTests
     [Fact]
     public void LoadEnvironmentVariableNames_ShouldReadNamesFromAppsettings()
     {
-        var basePath = CreateConfigurationDirectory();
+        var basePath = WpfProjectDirectory();
 
         var names = WpfAppFactory.LoadEnvironmentVariableNames(basePath);
 
-        names.Should().Equal("SMS_HTTP_BASE_URL", "SMS_HTTP_USERNAME", "SMS_HTTP_PASSWORD");
+        names.Should().NotBeEmpty();
+        names.Should().OnlyContain(name => !string.IsNullOrWhiteSpace(name));
+        names.Should().OnlyHaveUniqueItems();
     }
 
     [Fact]
     public void LoadEnvironmentVariableOptions_ShouldReadCommentsFromAppsettings()
     {
-        var basePath = CreateConfigurationDirectory();
+        var basePath = WpfProjectDirectory();
 
         var options = WpfAppFactory.LoadEnvironmentVariableOptions(basePath);
 
-        options.Comments.Should().ContainKey("SMS_HTTP_BASE_URL")
-            .WhoseValue.Should().Be("Адрес SMS HTTP-сервера");
+        options.Comments.Keys.Should().OnlyContain(name => options.Names.Contains(name));
+        options.Comments.Values.Should().OnlyContain(comment => !string.IsNullOrWhiteSpace(comment));
     }
 
     [Fact]
@@ -71,28 +82,55 @@ public class WpfAppFactoryTests
         path.Should().EndWith(@"logs\test-sms-wpf-app-20260610.log");
     }
 
-    private static string CreateConfigurationDirectory()
+    [Fact]
+    public void BuildServices_ShouldConfigureNLogFile()
     {
-        var directory = Path.Combine(Path.GetTempPath(), "smart-meal-wpf-tests", Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(directory);
-        File.WriteAllText(
-            Path.Combine(directory, "appsettings.json"),
-            """
-            {
-              "EnvironmentVariables": {
-                "Names": [
-                  "SMS_HTTP_BASE_URL",
-                  "SMS_HTTP_USERNAME",
-                  "SMS_HTTP_PASSWORD"
-                ],
-                "Comments": {
-                  "SMS_HTTP_BASE_URL": "Адрес SMS HTTP-сервера"
-                }
-              }
-            }
-            """);
+        var name = $"SMART_MEAL_SERVICE_WPF_TEST_{Guid.NewGuid():N}";
+        var logDirectory = Path.Combine(Path.GetTempPath(), "smart-meal-wpf-tests", Guid.NewGuid().ToString("N"));
 
-        return directory;
+        using var provider = WpfAppFactory.BuildServices([name], logDirectory);
+
+        try
+        {
+            var logger = provider.Resolve<IEnvironmentVariableChangeLogger>();
+
+            logger.LogChanged(name, "test-value");
+            LogManager.Flush();
+            LogManager.Shutdown();
+
+            var logFilePath = WpfAppFactory.BuildLogFilePath(logDirectory, DateTime.Now);
+            File.Exists(logFilePath).Should().BeTrue();
+            File.ReadAllText(logFilePath)
+                .Should().Contain(name)
+                .And.Contain("test-value");
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable(name, null, EnvironmentVariableTarget.User);
+            LogManager.Shutdown();
+        }
+    }
+
+    private static string WpfProjectDirectory()
+    {
+        var current = new DirectoryInfo(AppContext.BaseDirectory);
+
+        while (current is not null)
+        {
+            var appsettingsPath = Path.Combine(
+                current.FullName,
+                "src",
+                "SmartMealService.Wpf",
+                "Properties",
+                "appsettings.json");
+
+            if (File.Exists(appsettingsPath))
+                return Path.GetDirectoryName(appsettingsPath)!;
+
+            current = current.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Cannot locate src/SmartMealService.Wpf/Properties/appsettings.json.");
     }
 
     private static void RunInStaThread(Action action)

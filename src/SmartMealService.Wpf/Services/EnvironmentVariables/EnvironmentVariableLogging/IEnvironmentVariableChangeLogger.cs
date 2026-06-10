@@ -1,4 +1,4 @@
-namespace SmartMealService.Wpf.Services;
+namespace SmartMealService.Wpf.Services.EnvironmentVariables.EnvironmentVariableLogging;
 
 public interface IEnvironmentVariableChangeLogger
 {

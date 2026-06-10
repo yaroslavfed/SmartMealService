@@ -1,7 +1,7 @@
 using FluentAssertions;
-using SmartMealService.Wpf.ViewModels;
+using SmartMealService.Wpf.Controls.EnvironmentVariablesPanel;
 
-namespace SmartMealService.Wpf.Tests.ViewModels;
+namespace SmartMealService.Wpf.Tests.Controls.EnvironmentVariablesPanel;
 
 public class EnvironmentVariableRowTests
 {

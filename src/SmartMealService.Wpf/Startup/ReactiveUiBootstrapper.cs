@@ -2,7 +2,7 @@ using ReactiveUI.Builder;
 
 namespace SmartMealService.Wpf.Startup;
 
-internal static class ReactiveUiBootstrapper
+static internal class ReactiveUiBootstrapper
 {
     private static readonly object SyncRoot = new();
     private static bool _initialized;
@@ -19,6 +19,7 @@ internal static class ReactiveUiBootstrapper
 
             RxAppBuilder.CreateReactiveUIBuilder()
                 .WithCoreServices()
+                .WithWpf()
                 .BuildApp();
 
             _initialized = true;

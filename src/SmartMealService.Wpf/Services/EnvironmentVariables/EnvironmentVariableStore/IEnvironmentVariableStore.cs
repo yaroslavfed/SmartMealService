@@ -1,4 +1,4 @@
-namespace SmartMealService.Wpf.Services;
+namespace SmartMealService.Wpf.Services.EnvironmentVariables.EnvironmentVariableStore;
 
 public interface IEnvironmentVariableStore
 {

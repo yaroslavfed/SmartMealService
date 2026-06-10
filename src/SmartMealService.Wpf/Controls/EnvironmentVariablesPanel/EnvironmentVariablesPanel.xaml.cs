@@ -1,7 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace SmartMealService.Wpf.Views;
+namespace SmartMealService.Wpf.Controls.EnvironmentVariablesPanel;
 
 public partial class EnvironmentVariablesPanel : UserControl
 {
