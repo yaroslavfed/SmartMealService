@@ -1,6 +1,6 @@
 # SmartMealService
 
-Тестовые задания на позицию Middle Fullstack C# Developer в компании «ООО СМАРТ МИЛ СЕРВИС»
+Тестовое задание на позицию Middle Fullstack C# Developer в компании «ООО СМАРТ МИЛ СЕРВИС»
 
 Проект состоит из двух частей:
 
