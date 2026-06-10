@@ -8,7 +8,7 @@ using GrpcMenuItem = Sms.Test.MenuItem;
 using GrpcOrder = Sms.Test.Order;
 using SmsTestService = Sms.Test.SmsTestService;
 
-namespace SmartMealService.Grpc.Tests;
+namespace SmartMealService.Grpc.Tests.Clients;
 
 public class SmsGrpcClientTests
 {
@@ -28,8 +28,6 @@ public class SmsGrpcClientTests
             () => Status.DefaultSuccess,
             () => new Metadata(),
             () => { });
-
-    // --- GetMenu ---
 
     [Fact]
     public async Task GetMenu_ShouldReturnMenuItems_WhenServerReturnsSuccess()
@@ -101,8 +99,6 @@ public class SmsGrpcClientTests
         await act.Should().ThrowAsync<SmsApiException>()
             .WithMessage("Меню недоступно");
     }
-
-    // --- SendOrder ---
 
     [Fact]
     public async Task SendOrder_ShouldReturnTrue_WhenServerReturnsSuccess()

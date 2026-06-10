@@ -7,7 +7,7 @@ using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;
 
-namespace SmartMealService.Http.Tests;
+namespace SmartMealService.Http.Tests.Clients;
 
 public class SmsHttpClientTests : IDisposable
 {
