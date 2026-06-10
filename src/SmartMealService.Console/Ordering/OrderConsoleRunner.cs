@@ -42,7 +42,7 @@ public class OrderConsoleRunner(
     private void WriteMenu(IEnumerable<MenuItem> menuItems)
     {
         foreach (var item in menuItems)
-            console.WriteLine($"{item.Name} - {item.Id} ({item.Article}) - {item.Price}");
+            console.WriteLine($"{item.Name} – {item.Id} ({item.Article}) – {item.Price}");
     }
 
     private Order ReadOrder(IReadOnlyCollection<MenuItem> menuItems)

@@ -72,6 +72,8 @@ public class OrderConsoleRunnerTests
 
         await runner.RunAsync();
 
+        console.Output.Should().Contain("Каша гречневая – 5979224 (A1004292) – 50");
+        console.Output.Should().Contain("Конфеты Коровка – 9084246 (A1004293) – 300");
         console.Output.Should().Contain("УСПЕХ");
     }
 
