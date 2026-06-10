@@ -56,7 +56,7 @@ public static class ConsoleAppFactory
     private static IConfigurationRoot LoadConfiguration(string basePath) =>
         new ConfigurationBuilder()
             .SetBasePath(basePath)
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+            .AddJsonFile("Properties/appsettings.json", optional: false, reloadOnChange: false)
             .Build();
 
     private static void ConfigureLogging()
